@@ -23,7 +23,7 @@
 #define voltCalcCrossings 20
 #define voltCalcTimeout 50
 #define avgReadings 12
-#define coldStartTime 3
+#define startTime 5
 
 #define READVCC_CALIBRATION_CONST 1131750L
 #define loadMaxVoltage 12.7
@@ -39,7 +39,7 @@ float ipVoltage=0;
 float opVoltage=0;
 float curr=0;
 
-int coldStartVar=0;
+int startVar=0;
 int pwmValue=0;
 
 boolean lcdRefresh=true;
@@ -83,7 +83,7 @@ void loop()
   //outputVoltage.calcVI(20,100);
   readBatteryVoltage();
   batteryVoltage = (((readVcc()*avgValue*batteryConstant))/1000000); // Vcc*adc_value*batteryConstant
-if(coldStartVar==coldStartTime)
+if(startVar==startTime)
   {
   if(lcdRefresh==true)
   {
@@ -114,27 +114,12 @@ if(coldStartVar==coldStartTime)
      digitalWrite(stepUpPinRed,LOW);
      digitalWrite(stepDownPinBrown,LOW);
      warmStartStatus=false;
-     delay(3000);
-    digitalWrite(backupOnPin,LOW);
+     startVar=0;
     }
-    if(ipVoltage>180&&ipVoltage<210)
-  {
-    digitalWrite(stepUpPinRed,HIGH);
-    digitalWrite(stepUpPinYellow,LOW);
-    digitalWrite(stepDownPinBrown,LOW);
-  }
-  if(ipVoltage>135&&ipVoltage<150)
-  {
-    digitalWrite(stepUpPinYellow,HIGH);
-    digitalWrite(stepUpPinRed,LOW);
-    digitalWrite(stepDownPinBrown,LOW);
-  }
-  if(ipVoltage>220&&ipVoltage<250)
-  {
+    digitalWrite(backupOnPin,LOW);
+    delay(5);
     digitalWrite(stepDownPinBrown,HIGH);
-    digitalWrite(stepUpPinYellow,LOW);
-    digitalWrite(stepUpPinRed,LOW);
-  } 
+    
     if(batteryVoltage<batteryBulkVoltage&&batteryBulkStatus==true)
     {
       analogWrite(chargerPin,255); //bulk charge
@@ -169,6 +154,24 @@ if(coldStartVar==coldStartTime)
     }
     percentDisplay=false;
   }
+  if(ipVoltage>180&&ipVoltage<210)
+  {
+    digitalWrite(stepUpPinRed,HIGH);
+    digitalWrite(stepUpPinYellow,LOW);
+    digitalWrite(stepDownPinBrown,LOW);
+  }
+  if(ipVoltage>135&&ipVoltage<150)
+  {
+    digitalWrite(stepUpPinYellow,HIGH);
+    digitalWrite(stepUpPinRed,LOW);
+    digitalWrite(stepDownPinBrown,LOW);
+  }
+  if(ipVoltage>220&&ipVoltage<250)
+  {
+    digitalWrite(stepDownPinBrown,HIGH);
+    digitalWrite(stepUpPinYellow,LOW);
+    digitalWrite(stepUpPinRed,LOW);
+  } 
   if(batteryVoltage<lowCutoffVoltage)
   {
     digitalWrite(backupOnPin,LOW);
@@ -256,8 +259,8 @@ long readVcc()
 void changeStatus()
 {
   lcdRefresh=!lcdRefresh;
-  if(coldStartVar!=coldStartTime)
+  if(startVar!=startTime)
   {
-  coldStartVar++;
+  startVar++;
   }
 }
