@@ -25,13 +25,13 @@
 #define avgReadings 12
 #define startTime 5
 
-#define READVCC_CALIBRATION_CONST 1131750L
-#define loadMaxVoltage 12.7
-#define lowCutoffVoltage 10.5
-#define lowCutoffResetVoltage 11.8
-#define batteryBulkVoltage 12.4
-#define batteryAbsorbtionVoltage 14.10
-#define batteryFloatVoltage 13.2
+#define READVCC_CALIBRATION_CONST 1131750L // internal Vref calibration constant
+#define loadMaxVoltage 12.7 // full battery voltage
+#define lowCutoffVoltage 10.5 // low battery voltage
+#define lowCutoffResetVoltage 11.8 // cutoff reset Volts
+#define batteryBulkVoltage 12.4 // bulk voltage
+#define batteryAbsorbtionVoltage 14.10 // absorbtion voltage
+#define batteryFloatVoltage 13.2 // float voltage
 
 float avgValue;
 float batteryVoltage=0;
