@@ -40,6 +40,7 @@ float opVoltage=0;
 float curr=0;
 
 int startVar=0;
+int delayCounter=0;
 int pwmValue=0;
 
 boolean lcdRefresh=true;
@@ -113,13 +114,33 @@ if(startVar==startTime)
      digitalWrite(stepUpPinYellow,LOW);
      digitalWrite(stepUpPinRed,LOW);
      digitalWrite(stepDownPinBrown,LOW);
+     delayCounter=0;
+     if(delayCounter==startTime)
+     {
+     digitalWrite(backupOnPin,LOW);
+     delay(5);
+     digitalWrite(stepDownPinBrown,HIGH);
      warmStartStatus=false;
-     startVar=0;
+     }
     }
-    digitalWrite(backupOnPin,LOW);
-    delay(5);
+     if(ipVoltage>180&&ipVoltage<210)
+  {
+    digitalWrite(stepUpPinRed,HIGH);
+    digitalWrite(stepUpPinYellow,LOW);
+    digitalWrite(stepDownPinBrown,LOW);
+  }
+  if(ipVoltage>135&&ipVoltage<150)
+  {
+    digitalWrite(stepUpPinYellow,HIGH);
+    digitalWrite(stepUpPinRed,LOW);
+    digitalWrite(stepDownPinBrown,LOW);
+  }
+  if(ipVoltage>220&&ipVoltage<250)
+  {
     digitalWrite(stepDownPinBrown,HIGH);
-    
+    digitalWrite(stepUpPinYellow,LOW);
+    digitalWrite(stepUpPinRed,LOW);
+  } 
     if(batteryVoltage<batteryBulkVoltage&&batteryBulkStatus==true)
     {
       analogWrite(chargerPin,255); //bulk charge
@@ -153,24 +174,6 @@ if(startVar==startTime)
       analogWrite(chargerPin,0);
     }
     percentDisplay=false;
-  }
-  if(ipVoltage>180&&ipVoltage<210)
-  {
-    digitalWrite(stepUpPinRed,HIGH);
-    digitalWrite(stepUpPinYellow,LOW);
-    digitalWrite(stepDownPinBrown,LOW);
-  }
-  if(ipVoltage>135&&ipVoltage<150)
-  {
-    digitalWrite(stepUpPinYellow,HIGH);
-    digitalWrite(stepUpPinRed,LOW);
-    digitalWrite(stepDownPinBrown,LOW);
-  }
-  if(ipVoltage>220&&ipVoltage<250)
-  {
-    digitalWrite(stepDownPinBrown,HIGH);
-    digitalWrite(stepUpPinYellow,LOW);
-    digitalWrite(stepUpPinRed,LOW);
   } 
   if(batteryVoltage<lowCutoffVoltage)
   {
@@ -180,8 +183,7 @@ if(startVar==startTime)
   if(batteryVoltage>lowCutoffResetVoltage)
   {
     cutOffStatus=false;
-  }
-  
+  }  
 }
 }
 void readBatteryVoltage()
@@ -258,6 +260,11 @@ long readVcc()
 
 void changeStatus()
 {
+  if(delayCounter!=startTime&&warmStartStatus==true)
+  {
+    delayCounter++;
+  }
+  }
   lcdRefresh=!lcdRefresh;
   if(startVar!=startTime)
   {
